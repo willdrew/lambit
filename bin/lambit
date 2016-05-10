@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+
+# vim: set filetype=ruby:
+
+require 'gli'
+require 'lambit'
+
+include GLI::App
+
+version Lambit::VERSION
+
+program_desc 'A utility to manage AWS Lambda. Lambda + It => Lambit!'
+
+tmpdir                      = ENV['LAMBIT_TMPDIR']
+project_path                = ENV['LAMBIT_PROJECT_PATH']
+config_filename             = ENV['LAMBIT_CONFIG_FILENAME']
+regexp                      = ENV['LAMBIT_REGEXP']
+
+flag ['tmpdir'],            :default_value => tmpdir          || '/tmp/lambit'
+flag ['config-filename'],   :default_value => config_filename || 'lambit.yml'
+flag ['project-path'],      :default_value => project_path
+flag ['regexp'],            :default_value => regexp
+
+switch [:d, 'debug']
+switch [:v, 'verbose']
+switch [:n, 'dry-run']
+
+def project_path_check!(options)
+  exit_now!('No project given!') if options['project-path'].nil? || options['project-path'].empty?
+end
+
+def set_config(options)
+  Lambit::Common::Config.instance.init_config(options)
+end
+
+def bootstrap(options)
+  project_path_check! options
+  set_config options
+  Lambit.logger.info "Lambit CLI using options: #{options}" if Lambit.is_verbose?
+end
+
+command :build do |c|
+  c.action do |global_options, options, args|
+    bootstrap(global_options)
+    Lambit::Commands::Lambdas.run 'build_lambdas', global_options, args
+  end
+end
+
+command :deploy do |c|
+  c.action do |global_options, options, args|
+    bootstrap(global_options)
+    Lambit::Commands::Lambdas.run 'create_lambdas', global_options, args
+  end
+end
+
+command :delete do |c|
+  c.action do |global_options, options, args|
+    bootstrap(global_options)
+    Lambit::Commands::Lambdas.run 'delete_lambdas', global_options, args
+  end
+end
+
+command :add_event_sources do |c|
+  c.action do |global_options, options, args|
+    bootstrap(global_options)
+    Lambit::Commands::Lambdas.run 'add_event_sources_lambdas', global_options, args
+  end
+end
+
+command :remove_event_sources do |c|
+  c.action do |global_options, options, args|
+    bootstrap(global_options)
+    Lambit::Commands::Lambdas.run 'remove_event_sources_lambdas', global_options, args
+  end
+end
+
+command :add_alarms do |c|
+  c.action do |global_options, options, args|
+    bootstrap(global_options)
+    Lambit::Commands::Lambdas.run 'add_alarms_lambdas', global_options, args
+  end
+end
+
+command :delete_alarms do |c|
+  c.action do |global_options, options, args|
+    bootstrap(global_options)
+    Lambit::Commands::Lambdas.run 'delete_alarms_lambdas', global_options, args
+  end
+end
+
+exit run(ARGV)
