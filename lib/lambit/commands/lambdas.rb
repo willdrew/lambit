@@ -370,7 +370,7 @@ module Lambit::Commands
           @index = index
           opt_hash = parse_hash(alarm_config)
           opts     = opt_hash.symbolize_keys_deep
-          title    = "Remove CloudWatch Alarms"
+          title    = "Add CloudWatch Alarms"
 
           verbose_msg_for(title, opts)
           Lambit::Aws::CloudWatch::Alarm.new(opts).put_metric_alarm unless Lambit.is_dry_run?

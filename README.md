@@ -54,7 +54,7 @@ lambit add_alarms
 
 ## Lambit Project Conventions
 
-``` shell
+```shell
 ./lambdas
   ./my-lambit-project
     ./function
@@ -62,7 +62,7 @@ lambit add_alarms
     .lambit.yml
   ./my-other-lambit-project
     ...
-``` shell
+```
 
 - 'function' directory should contain any function code (required)
 - 'templates' directory should contain any templates like .json files (optional)
